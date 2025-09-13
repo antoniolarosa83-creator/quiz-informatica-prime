@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test di Ingresso - Informatica</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            text-align: center;
+            background-color: #2c5aa0;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .question-container {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .question {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .answers {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .answers li {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .answers li:hover {
+            background-color: #e9ecef;
+        }
+        
+        .answers input[type="radio"] {
+            margin-right: 10px;
+        }
+        
+        .section-title {
+            background-color: #17a2b8;
+            color: white;
+            padding: 15px;
+            margin: 30px 0 20px 0;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .submit-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .submit-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .submit-btn:hover {
+            background-color: #218838;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        .loading-spinner.active {
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .student-info {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>TEST DI INGRESSO - INFORMATICA</h1>
+        <p>Istituto Tecnico "Familiari" - Melito Porto Salvo (RC)</p>
+        <p>Test di Valutazione delle Competenze Informatiche</p>
+    </div>
+
+    <form id="testForm">
+        <div class="student-info">
+            <h3>Informazioni Studente</h3>
+            <div class="form-group">
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" name="nome" required>
+            </div>
+            <div class="form-group">
+                <label for="cognome">Cognome:</label>
+                <input type="text" id="cognome" name="cognome" required>
+            </div>
+            <div class="form-group">
+                <label for="classe">Classe:</label>
+                <select id="classe" name="classe" required>
+                    <option value="">Seleziona la classe</option>
+                    <option value="1FQ">1FQ</option>
+                    <option value="1EQ-A">1EQ-A</option>
+                    <option value="1EQ-B">1EQ-B</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="questionsContainer">
+            <!-- Le domande verranno generate dinamicamente dal JavaScript -->
+        </div>
+
+        <div class="submit-container">
+            <button type="submit" class="submit-btn">
+                <span id="buttonText">Invia Test</span>
+                <div class="loading-spinner" id="loadingSpinner"></div>
+            </button>
+        </div>
+    </form>
+
+    <script>
+        // Configurazione Google Apps Script
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwOvUYwZDwvulcEH2QXMs88apYjzelsEHDiMu_ZNNseAaf73TC9xhMPJ1OilhU9DkxL/exec'
+        // Domande del test - 60 domande complete
+        const domande = [
+            {
+                sezione: "CONCETTI DI BASE DELL'ICT",
+                domande: [
+                    {
+                        numero: 1,
+                        testo: "Come possiamo migliorare le prestazioni del nostro computer?",
+                        risposte: [
+                            "a) Adoperando uno schermo LCD TOUCH",
+                            "b) Incrementando la RAM",
+                            "c) Installando una wirless",
+                            "d) Adoperando dispositivi come la pen drive"
+                        ]
+                    },
+                    {
+                        numero: 2,
+                        testo: "Quale affermazione, tra le seguenti è corretta?",
+                        risposte: [
+                            "a) La ROM e la RAM non sono memorie volatili",
+                            "b) La ROM e la RAM sono entrambe memorie volatili",
+                            "c) La ROM è una memoria volatile",
+                            "d) La RAM è una memoria volatile"
+                        ]
+                    },
+                    {
+                        numero: 3,
+                        testo: "Cosa significa che un processore funziona a 2 Gigahetrz (GHZ)?",
+                        risposte: [
+                            "a) Che può svolgere 2000 operazioni elementari al secondo",
+                            "b) Che può svolgere 2 milioni di operazioni elementari al secondo",
+                            "c) Che può svolgere 2 miliardi di operazioni elementari al secondo",
+                            "d) Che può svolgere 20.000 operazioni elementari al secondo"
+                        ]
+                    },
+                    {
+                        numero: 4,
+                        testo: "Individuare tra le seguenti affermazioni quella falsa, relative alle regole ergonomiche:",
+                        risposte: [
+                            "a) È opportuno cambiare spesso posizione del corpo e delle gambe e fare pause frequenti",
+                            "b) Le regole dell'illuminotecnica prevedono che il piano della tastiera sia perfettamente visibile",
+                            "c) I riflessi dello schermo sono i principali responsabili dell'affaticamento della vista",
+                            "d) Lo schermo deve ricevere luce direttamente in modo da aumentare la visibilità"
+                        ]
+                    },
+                    {
+                        numero: 5,
+                        testo: "Come si può proteggere un computer dall'aggressione dei virus?",
+                        risposte: [
+                            "a) Rendendo non attiva l'esecuzione automatica delle macro",
+                            "b) Non inserendo allegati ai messaggi di e-mail",
+                            "c) Ripulendo periodicamente le tracce del disco fisso",
+                            "d) Non adoperando CD-ROM e DVD ma soltanto USB Disk"
+                        ]
+                    },
+                    {
+                        numero: 6,
+                        testo: "Quali delle seguenti affermazioni definisce meglio un'architettura tipo, 'client-server'?",
+                        risposte: [
+                            "a) Un'architettura in cui più entità (server) offrono dei servizi ad una sola entità (client)",
+                            "b) Un'architettura in cui un'entità (client) offre dei servizi ad altre entità (server)",
+                            "c) Un'architettura in cui più entità (client) offrono del servizi ad altre entità (server)",
+                            "d) Un'architettura in cui una o più entità (server) offrono dei servizi ad altre entità (client)"
+                        ]
+                    },
+                    {
+                        numero: 7,
+                        testo: "La CPU è:",
+                        risposte: [
+                            "a) una periferica di output",
+                            "b) un'unità centrale di elaborazione",
+                            "c) un programma applicativo",
+                            "d) un supporto di memorizzazione di massa"
+                        ]
+                    },
+                    {
+                        numero: 8,
+                        testo: "Quale, tra le seguenti affermazioni, chiarisce un corretto approccio al problema della sicurezza dei dati nell'ambito di un'organizzazione:",
+                        risposte: [
+                            "a) I dati riservati sono a disposizione del pubblico",
+                            "b) Le autorizzazioni (le password di accesso) sono quasi sempre le stesse",
+                            "c) Raramente vengono effettuati backup dei sistemi informatici",
+                            "d) Esistono procedure per riferire incidenti relativi alla sicurezza"
+                        ]
+                    },
+                    {
+                        numero: 9,
+                        testo: "Cos'è il podcast?",
+                        risposte: [
+                            "a) Un servizio che consente di scaricare file multimediali sul proprio computer",
+                            "b) Un servizio che consente di pubblicare un diario personale online",
+                            "c) Una comunità virtuale in cui è possibile chattare",
+                            "d) Una stazione radiofonica o televisiva che trasmette attraverso Internet"
+                        ]
+                    },
+                    {
+                        numero: 10,
+                        testo: "Come si misura la velocità di trasferimento dei dati?",
+                        risposte: [
+                            "a) In Kbit/s (KYlobyte per secondo)",
+                            "b) In byte per secondo",
+                            "c) In bps (bit per secondo)",
+                            "d) In Hertz"
+                        ]
+                    }
+                ]
+            },
+            {
+                sezione: "GESTIONE DEI FILES",
+                domande: [
+                    {
+                        numero: 11,
+                        testo: "La formattazione del disco ha come effetti:",
+                        risposte: [
+                            "a) La creazione di una copia di backup del disco",
+                            "b) Il salvataggio automatico di tutti i dati del disco",
+                            "c) La ripartizione delle aree del disco",
+                            "d) La perdita di tutti i dati contenuti nel disco"
+                        ]
+                    },
+                    {
+                        numero: 12,
+                        testo: "Perché non si dovrebbe mai cambiare l'estensione di un file?",
+                        risposte: [
+                            "a) Il file potrebbe essere attaccato da virus",
+                            "b) Si determinerebbe un' instabilità di tutto il sistema",
+                            "c) Si determinerebbe un sovraccarico del sistema",
+                            "d) Il file potrebbe non essere più utilizzabile"
+                        ]
+                    },
+                    {
+                        numero: 13,
+                        testo: "Qual è l'acronimo adoperato per indicare l'interfaccia grafica?",
+                        risposte: [
+                            "a) GIF",
+                            "b) AVI",
+                            "c) LCD",
+                            "d) GUI"
+                        ]
+                    },
+                    {
+                        numero: 14,
+                        testo: "Perché è indispensabile aggiornare costantemente il software antivirus?",
+                        risposte: [
+                            "a) Per rinnovare la licenza d'uso",
+                            "b) Per migliorare la sua efficacia come firewall",
+                            "c) Per renderlo efficace contro i nuovi tipi di virus",
+                            "d) Per adeguarlo alle nuove versioni di Windows"
+                        ]
+                    },
+                    {
+                        numero: 15,
+                        testo: "Quale uso si può fare di un'immagine catturata sullo schermo?",
+                        risposte: [
+                            "a) Può essere solo stampata",
+                            "b) Può essere incollata anche in un documento di testo purch‚ nel computer sia installato un programma per il ritocco delle immagini",
+                            "c) Può essere incollata all'interno di un documento",
+                            "d) Può essere incollata solo in un file creato con un programma di grafica"
+                        ]
+                    },
+                    {
+                        numero: 16,
+                        testo: "Per selezionare più icone che non sono adiacenti si utilizza il tasto:",
+                        risposte: [
+                            "a) Ctrl",
+                            "b) Shift",
+                            "c) CapsLook",
+                            "d) AltGR"
+                        ]
+                    },
+                    {
+                        numero: 17,
+                        testo: "Le icone:",
+                        risposte: [
+                            "a) Rappresentano i programmi attualmente caricati in memoria",
+                            "b) Rappresentano applicazioni, file, cartelle o dispositivi",
+                            "c) Rappresentano solo i programmi che è possibile avviare, cioè caricare in memoria",
+                            "d) Rappresentano file, come ad esempio i documenti"
+                        ]
+                    },
+                    {
+                        numero: 18,
+                        testo: "In quale tipo di visualizzazione del contenuto della cartella vengono mostrate informazioni aggiuntive riguardanti gli oggetti memorizzati nella cartella corrente?",
+                        risposte: [
+                            "a) Dettagli",
+                            "b) Anteprima",
+                            "c) Titoli",
+                            "d) Elenco"
+                        ]
+                    },
+                    {
+                        numero: 19,
+                        testo: "Cosa si intende per 'dimensione' di una cartella?",
+                        risposte: [
+                            "a) Il numero di file in essa contenuti",
+                            "b) La capienza massima della cartella",
+                            "c) La quantità di memoria occupata dalla cartella",
+                            "d) La quantità di Gigahertz occupata dalla cartella"
+                        ]
+                    },
+                    {
+                        numero: 20,
+                        testo: "Come viene definito l'insieme dei documenti in attesa di essere stampati?",
+                        risposte: [
+                            "a) Coda di stampa",
+                            "b) Insieme di stampa",
+                            "c) Driver della stampante",
+                            "d) Memoria di stampa"
+                        ]
+                    }
+                ]
+            },
+            {
+                sezione: "ELABORAZIONE TESTI",
+                domande: [
+                    {
+                        numero: 21,
+                        testo: "In Word, in quale tipo di visualizzazione è possibile vedere l'Intestazione e il più di pagina:",
+                        risposte: [
+                            "a) Bozza",
+                            "b) Layout di stampa",
+                            "c) Struttura",
+                            "d) Layout Web"
+                        ]
+                    },
+                    {
+                        numero: 22,
+                        testo: "Qual è la giusta sequenza di comandi per duplicare il testo di un documento?",
+                        risposte: [
+                            "a) Selezionare il testo – Incolla – posizionare il cursore – Incolla",
+                            "b) Taglia – posizionare il cursore – Incolla",
+                            "c) Selezionare il testo – Copia – Posizionare il cursore – Incolla",
+                            "d) Posizionare il cursore – selezionare il testo – Copia – Incolla"
+                        ]
+                    },
+                    {
+                        numero: 23,
+                        testo: "In Excel, quale formula devi utilizzare per calcolare la media di un intervallo di celle da A1 a A10?",
+                        risposte: [
+                            "a) =MEDIA(A1:A10)",
+                            "b) =AVG(A1:A10)",
+                            "c) =SOMMA(A1:A10)/10",
+                            "d) =CALCOLA_MEDIA(A1:A10)"
+                        ]
+                    },
+                    {
+                        numero: 24,
+                        testo: "In Excel, quale formula utilizzi per contare il numero di celle non vuote in un intervallo A1:A10?",
+                        risposte: [
+                            "a) =CONTA.VALORI(A1:A10)",
+                            "b) =COUNT(A1:A10)",
+                            "c) =NUMERO(A1:A10)",
+                            "d) =CONTA.NUMERI(A1:A10)"
+                        ]
+                    },
+                    {
+                        numero: 25,
+                        testo: "Quale è l'estensione di un file modello di Word 2007?",
+                        risposte: [
+                            "a) .modx",
+                            "b) .docx",
+                            "c) .dotx",
+                            "d) .mocx"
+                        ]
+                    },
+                    {
+                        numero: 26,
+                        testo: "Il comando Sostituisci tutto, presente nella finestra di sostituzione, svolge la funzione di:",
+                        risposte: [
+                            "a) trovare la prima parola o frase in un testo e sostituirla con una nuova parola",
+                            "b) sostituire tutte le parole (o frasi) trovate nel testo con una nuova parola",
+                            "c) sostituire ad uno ad uno i termini individuati nel testo con una parola nuova chiedendo conferma ad ogni sostituzione",
+                            "d) sostituire, con una nuova parola, tutte le parole (o frasi) trovate unicamente nella pagina corrente del documento"
+                        ]
+                    },
+                    {
+                        numero: 27,
+                        testo: "Se abbiamo la necessità di salvare il documento con lo stesso nome, nello stesso disco, nella stessa cartella quale comando dobbiamo adoperare?",
+                        risposte: [
+                            "a) File Chiudi",
+                            "b) File Salva con nome",
+                            "c) File Apri",
+                            "d) File Salva"
+                        ]
+                    },
+                    {
+                        numero: 28,
+                        testo: "In Excel, quale funzione utilizzi per trovare il valore massimo in un intervallo di celle?",
+                        risposte: [
+                            "a) =MAX(intervallo)",
+                            "b) =MASSIMO(intervallo)",
+                            "c) =PIU_ALTO(intervallo)",
+                            "d) =VALORE_MAX(intervallo)"
+                        ]
+                    },
+                    {
+                        numero: 29,
+                        testo: "In Excel, quale funzione utilizzi per trovare il valore minimo in un intervallo di celle?",
+                        risposte: [
+                            "a) =MIN(intervallo)",
+                            "b) =MINIMO(intervallo)",
+                            "c) =PIU_BASSO(intervallo)",
+                            "d) =VALORE_MIN(intervallo)"
+                        ]
+                    },
+                    {
+                        numero: 30,
+                        testo: "Per correggere un errore soltanto nel punto in cui è stato segnalato dal controllo ortografico e grammaticale, quale opzione occorre utilizzare?",
+                        risposte: [
+                            "a) Cambia tutto",
+                            "b) Cambia Qui",
+                            "c) Cambia",
+                            "d) Cambia opzioni"
+                        ]
+                    }
+                ]
+            },
+            {
+                sezione: "FOGLI ELETTRONICI",
+                domande: [
+                    {
+                        numero: 31,
+                        testo: "Excel tratta per default i riferimenti alle celle di una formula come:",
+                        risposte: [
+                            "a) Riferimenti relativi",
+                            "b) Riferimenti misti",
+                            "c) Riferimenti generici",
+                            "d) Riferimenti assoluti"
+                        ]
+                    },
+                    {
+                        numero: 32,
+                        testo: "Quale messaggio di errore compare in Excel, se una formula sta usando un numero non valido per quel particolare tipo di operazione?",
+                        risposte: [
+                            "a) #NUM!",
+                            "b) #RIF!",
+                            "c) ####",
+                            "d) #DIV/0!"
+                        ]
+                    },
+                    {
+                        numero: 33,
+                        testo: "Cosa appare nella barra della formula di Excel, quando selezioniamo le celle da B3 a C8?",
+                        risposte: [
+                            "a) B3 and C8",
+                            "b) B3 = C8",
+                            "c) B3:C8",
+                            "d) B3;C8"
+                        ]
+                    },
+                    {
+                        numero: 34,
+                        testo: "In Excel, applicando il formato percentuale a una cella che contiene il valore 0,25 cosa visualizzerai?",
+                        risposte: [
+                            "a) 0,25%",
+                            "b) 25%",
+                            "c) 0,025%",
+                            "d) 2,5%"
+                        ]
+                    },
+                    {
+                        numero: 35,
+                        testo: "In Excel, cosa deve essere digitato nella cella C5 per sommare i valori delle celle C1, C2, C3 e C4?",
+                        risposte: [
+                            "a) =SOMMA(C1+C4)",
+                            "b) SOMMA(C1+C4)=",
+                            "c) =SOMMA(C1;C4)",
+                            "d) =SOMMA(C1:C4)"
+                        ]
+                    },
+                    {
+                        numero: 36,
+                        testo: "In Excel, quando un numero non riesce ad essere visualizzato perché la larghezza della colonna non è sufficiente, quale simbolo viene visualizzato?",
+                        risposte: [
+                            "a) #",
+                            "b) =",
+                            "c) *",
+                            "d) ?"
+                        ]
+                    },
+                    {
+                        numero: 37,
+                        testo: "In Excel, qual è il simbolo della moltiplicazione?",
+                        risposte: [
+                            "a) X",
+                            "b) &",
+                            "c) *",
+                            "d) PER"
+                        ]
+                    },
+                    {
+                        numero: 38,
+                        testo: "In Excel, se scriviamo $A2, cosa stiamo indicando?",
+                        risposte: [
+                            "a) Un riferimento misto di cella",
+                            "b) Un riferimento assoluto di cella",
+                            "c) Un riferimento relativo di cella",
+                            "d) La conversione di valuta in Dollari"
+                        ]
+                    },
+                    {
+                        numero: 39,
+                        testo: "In Excel, dove vengono visualizzati i dati inseriti in una cella?",
+                        risposte: [
+                            "a) Nella barra di stato",
+                            "b) Nella barra del titolo",
+                            "c) Nella barra della formula",
+                            "d) Nella casella del nome"
+                        ]
+                    },
+                    {
+                        numero: 40,
+                        testo: "Indicare dove è possibile salvare il grafico generato con i dati di una tabella Excel:",
+                        risposte: [
+                            "a) Solo sullo stesso foglio contenente i dati",
+                            "b) Indifferentemente su uno dei tre fogli indicati",
+                            "c) Solo in un nuovo foglio",
+                            "d) Solo su un foglio esistente"
+                        ]
+                    }
+                ]
+            },
+            {
+                sezione: "STRUMENTI DI PRESENTAZIONE",
+                domande: [
+                    {
+                        numero: 41,
+                        testo: "Nei programmi di Presentazione cosa si intende per «layout di una slide»?",
+                        risposte: [
+                            "a) Un modello di impaginazione della slide",
+                            "b) Un effetto di transizione della slide",
+                            "c) Lo sfondo di una slide",
+                            "d) Un collegamento fra una slide ed un'altra"
+                        ]
+                    },
+                    {
+                        numero: 42,
+                        testo: "In quale visualizzazione possono essere modificati i titoli, i testi, i disegni e le ClipArt, in PowerPoint?",
+                        risposte: [
+                            "a) Visualizzazione sequenza diapositive",
+                            "b) Visualizzazione Presentazione",
+                            "c) Visualizzazione Struttura",
+                            "d) Visualizzazione Normale"
+                        ]
+                    },
+                    {
+                        numero: 43,
+                        testo: "In PowerPoint, un effetto audio può essere:",
+                        risposte: [
+                            "a) Inserito solo se fa parte dell'effetto di animazione scelto",
+                            "b) Associato solo ad un effetto di animazione",
+                            "c) Associato ad un effetto di animazione e/o ad uno di transizione",
+                            "d) Associato solo ad un effetto di transizione"
+                        ]
+                    },
+                    {
+                        numero: 44,
+                        testo: "In PowerPoint, Quale opzione deve essere scelta nella finestra di stampa per eseguire la stampa di più slide nello stesso foglio?",
+                        risposte: [
+                            "a) La voce Diapositive nel menu a discesa Stampa di, specificando il numero di slide per pagina",
+                            "b) La voce Struttura nel menu a discesa Stampa di, specificando il numero di slide per pagina",
+                            "c) La voce Stampati nel menu a discesa Stampa di, specificando il numero di slide per pagina",
+                            "d) La voce Pagina Note nel menu a discesa Stampa di, specificando il numero di slide per pagina"
+                        ]
+                    },
+                    {
+                        numero: 45,
+                        testo: "In PowerPoint, gli effetti di transizione intervengono:",
+                        risposte: [
+                            "a) Alla comparsa di ogni oggetto animato nella slide",
+                            "b) Alla comparsa di ogni segnaposto nella slide",
+                            "c) Al passaggio fra una diapositiva ed un'altra",
+                            "d) Alla fine di una presentazione"
+                        ]
+                    },
+                    {
+                        numero: 46,
+                        testo: "Per cancellare un oggetto in una diapositiva, dopo averlo selezionato, basta:",
+                        risposte: [
+                            "a) Dal menu Modifica scegliere Taglia",
+                            "b) Premere il tasto Canc",
+                            "c) Premere contemporaneamente i tasti Ctrl ed X",
+                            "d) Usare indifferentemente uno dei tre metodi"
+                        ]
+                    },
+                    {
+                        numero: 47,
+                        testo: "Quale dei seguenti tipi di visualizzazione di una presentazione è più indicato per gestire le diapositive nella loro transizione e nell'ordinamento?",
+                        risposte: [
+                            "a) Pagina Note",
+                            "b) Presentazione",
+                            "c) Sequenza diapositive",
+                            "d) Struttura"
+                        ]
+                    },
+                    {
+                        numero: 48,
+                        testo: "Lo schema diapositiva è:",
+                        risposte: [
+                            "a) Una struttura che stabilisce il tipo di oggetti che possono essere inseriti in ciascuna slide della presentazione",
+                            "b) Una struttura per la memorizzazione di oggetti e stili per tutte le diapositive della presentazione",
+                            "c) Una pagina contenente l'elenco dettagliato delle slide di una presentazione con l'indicazione dei vari collegamenti fra le stesse",
+                            "d) Una struttura che permette di personalizzare unicamente l'aspetto di oggetti come immagini e forme, da inserire nella diapositiva"
+                        ]
+                    },
+                    {
+                        numero: 49,
+                        testo: "Quale dei seguenti è un possibile formato di salvataggio reso disponibile in PowerPoint?",
+                        risposte: [
+                            "a) xlsx",
+                            "b) txt",
+                            "c) jpeg",
+                            "d) docx"
+                        ]
+                    },
+                    {
+                        numero: 50,
+                        testo: "Quando salviamo una Presentazione, quale estensione attribuisce Power Point 2007 al file, per default?",
+                        risposte: [
+                            "a) .pptx",
+                            "b) .pot",
+                            "c) .pps",
+                            "d) .bmp"
+                        ]
+                    }
+                ]
+            },
+            {
+                sezione: "NAVIGAZIONE E COMUNICAZIONE IN RETE",
+                domande: [
+                    {
+                        numero: 51,
+                        testo: "I cosiddetti Preferiti (o segnalibri o bookmark) servono:",
+                        risposte: [
+                            "a) Cercare gli indirizzi dei siti che non si conoscono",
+                            "b) Tenere traccia di tutti i collegamenti che si eseguono in Internet",
+                            "c) A memorizzare nel PC gli indirizzi dei siti che si visitano più di frequente",
+                            "d) Individuare gli account di posta elettronica"
+                        ]
+                    },
+                    {
+                        numero: 52,
+                        testo: "Se vogliamo ricercare delle informazioni sui viaggi in Africa, quale tra le seguenti espressioni di ricerca esclude i viaggi charter?",
+                        risposte: [
+                            "a) Charter AND Viaggi NOT Africa",
+                            "b) Africa AND Viaggi OR Charter",
+                            "c) (Viaggi OR Africa) AND Charter",
+                            "d) (Viaggi AND Africa) NOT Charter"
+                        ]
+                    },
+                    {
+                        numero: 53,
+                        testo: "Una pagina Web può essere salvata in formato \"solo testo\"?",
+                        risposte: [
+                            "a) Si, senza limitazioni",
+                            "b) No, perché è un'opzione inestistente",
+                            "c) No, altrimenti non si vedrebbero più le immagini",
+                            "d) Si, ma perdiamo le formattazioni della pagina e le immagini"
+                        ]
+                    },
+                    {
+                        numero: 54,
+                        testo: "Cosa si intende per Feed RSS?",
+                        risposte: [
+                            "a) Un servizio che permette di scambiare messaggi in tempo reale",
+                            "b) Un programma che permette di leggere la posta elettronica anche tramite i cellulari",
+                            "c) Un servizio che permette di ricevere via Internet aggiornamenti su un argomento a un costo limitato",
+                            "d) Un servizio che consente agli utenti che si iscrivono di scaricare le novità pubblicate da un sito"
+                        ]
+                    },
+                    {
+                        numero: 55,
+                        testo: "Cos'è la crittografia end-to-end?",
+                        risposte: [
+                            "a) Un metodo di crittografia che protegge i dati solo durante la trasmissione",
+                            "b) Un sistema che cripta i messaggi solo sui server",
+                            "c) Un metodo che cripta i messaggi dal dispositivo mittente a quello destinatario senza decrittazione intermedia",
+                            "d) Un tipo di password avanzata per l'accesso ai servizi online"
+                        ]
+                    },
+                    {
+                        numero: 56,
+                        testo: "Cosa si scrive nella casella \"Cc:\" quando si invia un messaggio di posta elettronica?",
+                        risposte: [
+                            "a) L'indirizzo dei destinatari ai quali vogliamo inviare la mail per conoscenza",
+                            "b) L'indirizzo e-mail al quale si vuole ricevere la risposta",
+                            "c) L'oggetto della mail",
+                            "d) Il nome degli eventuali allegati alla nostra e-mail"
+                        ]
+                    },
+                    {
+                        numero: 57,
+                        testo: "Quale app di messaggistica utilizza la crittografia end-to-end per impostazione predefinita?",
+                        risposte: [
+                            "a) WhatsApp",
+                            "b) Telegram (chat normali)",
+                            "c) Facebook Messenger",
+                            "d) SMS tradizionali"
+                        ]
+                    },
+                    {
+                        numero: 58,
+                        testo: "Lo spamming è:",
+                        risposte: [
+                            "a) Un servizio fornito da alcuni provider per ripulire automaticamente la casella dalla posta indesiderata",
+                            "b) Un programma in grado di filtrare i messaggi",
+                            "c) Un virus informatico che si propaga attraverso la posta elettronica",
+                            "d) Il fenomeno di invio indiscriminato e automatizzato di e-mail a migliaia di indirizzi"
+                        ]
+                    },
+                    {
+                        numero: 59,
+                        testo: "Quale effetto si ottiene cliccando sul pulsante \"Inoltra\" in un programma di posta elettronica?",
+                        risposte: [
+                            "a) Il programma genera una nuova mail vuota indirizzata al mittente della mail ricevute",
+                            "b) Il programma crea una nuova mail nella quale sono ripetuti oggetto e contenuto della precedente, ma manca il destinatario",
+                            "c) Il programma invia la mail ricevuta a tutti i contatti presenti nel nostro indirizzario",
+                            "d) Il programma invia la mail ricevuta alla casella postale del provider"
+                        ]
+                    },
+                    {
+                        numero: 60,
+                        testo: "A cosa serve un certificato digitale?",
+                        risposte: [
+                            "a) Ad attestare l'identità di un utente o di un sito",
+                            "b) Ad attestare che un sito è protetto",
+                            "c) Ad attestare che un sito non presenta contenuti non adatti a minori",
+                            "d) Ad attestare che i prodotti venduti on-line sono originali"
+                        ]
+                    }
+                ]
+            }
+        ];
+        
+        // Genera le domande nel DOM
+        function generaDomande() {
+            const container = document.getElementById('questionsContainer');
+            
+            domande.forEach(sezione => {
+                // Crea titolo sezione
+                const titoloSezione = document.createElement('div');
+                titoloSezione.className = 'section-title';
+                titoloSezione.textContent = sezione.sezione;
+                container.appendChild(titoloSezione);
+                
+                // Crea domande della sezione
+                sezione.domande.forEach(domanda => {
+                    const questionDiv = document.createElement('div');
+                    questionDiv.className = 'question-container';
+                    
+                    const questionText = document.createElement('div');
+                    questionText.className = 'question';
+                    questionText.textContent = `${domanda.numero}. ${domanda.testo}`;
+                    questionDiv.appendChild(questionText);
+                    
+                    const answersList = document.createElement('ul');
+                    answersList.className = 'answers';
+                    
+                    domanda.risposte.forEach((risposta, index) => {
+                        const li = document.createElement('li');
+                        const input = document.createElement('input');
+                        const label = document.createElement('label');
+                        
+                        input.type = 'radio';
+                        input.name = `q${domanda.numero}`;
+                        input.value = String.fromCharCode(97 + index); // a, b, c, d
+                        input.id = `q${domanda.numero}_${String.fromCharCode(97 + index)}`;
+                        
+                        label.htmlFor = input.id;
+                        label.textContent = risposta;
+                        
+                        li.appendChild(input);
+                        li.appendChild(label);
+                        answersList.appendChild(li);
+                    });
+                    
+                    questionDiv.appendChild(answersList);
+                    container.appendChild(questionDiv);
+                });
+            });
+        }
+        
+        // Carica le domande quando la pagina è pronta
+        document.addEventListener('DOMContentLoaded', generaDomande);
+        
+        document.getElementById('testForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Raccolta dati studente
+            const studentData = {
+                nome: document.getElementById('nome').value,
+                cognome: document.getElementById('cognome').value,
+                classe: document.getElementById('classe').value,
+                dataTest: new Date().toLocaleString('it-IT'),
+                risposte: {}
+            };
+            
+            // Raccolta risposte
+            for (let i = 1; i <= 60; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                studentData.risposte[`domanda_${i}`] = selected ? selected.value : '';
+            }
+            
+            // Array completo delle risposte corrette per tutte le 60 domande 
+            const risposteCorrette = [
+                'b', 'd', 'c', 'd', 'a', 'd', 'b', 'd', 'a', 'c',  // 1-10: Concetti di Base ICT
+                'd', 'd', 'd', 'c', 'c', 'a', 'b', 'a', 'c', 'a',  // 11-20: Gestione Files
+                'b', 'c', 'a', 'a', 'c', 'b', 'd', 'a', 'a', 'c',  // 21-30: Elaborazione Testi 
+                'a', 'a', 'c', 'b', 'd', 'a', 'c', 'a', 'c', 'b',  // 31-40: Fogli Elettronici
+                'a', 'd', 'c', 'c', 'c', 'd', 'c', 'b', 'c', 'a',  // 41-50: Presentazioni 
+                'c', 'd', 'd', 'd', 'c', 'a', 'a', 'd', 'b', 'a'   // 51-60: Navigazione e Comunicazione 
+            ];
+            let risposteCorrette_count = 0;
+            let risposteErrate_count = 0;
+            let risposteMancanti_count = 0;
+            const dettaglioRisposte = {};
+            
+            for (let i = 1; i <= 60; i++) {
+                const rispostaStudente = studentData.risposte[`domanda_${i}`];
+                const rispostaCorretta = risposteCorrette[i-1];
+                
+                if (!rispostaStudente || rispostaStudente === '') {
+                    risposteMancanti_count++;
+                    dettaglioRisposte[`domanda_${i}_punti`] = 0;
+                    dettaglioRisposte[`domanda_${i}_corretta`] = rispostaCorretta;
+                } else if (rispostaStudente === rispostaCorretta) {
+                    risposteCorrette_count++;
+                    dettaglioRisposte[`domanda_${i}_punti`] = 1;
+                    dettaglioRisposte[`domanda_${i}_corretta`] = rispostaCorretta;
+                } else {
+                    risposteErrate_count++;
+                    dettaglioRisposte[`domanda_${i}_punti`] = 0;
+                    dettaglioRisposte[`domanda_${i}_corretta`] = rispostaCorretta;
+                }
+            }
+            
+            studentData.punteggio = risposteCorrette_count;
+            studentData.percentuale = (risposteCorrette_count / 60 * 100).toFixed(1);
+            studentData.risposteCorrette = risposteCorrette_count;
+            studentData.risposteErrate = risposteErrate_count;
+            studentData.risposteMancanti = risposteMancanti_count;
+            studentData.dettaglioRisposte = dettaglioRisposte;
+            
+            // Invio dati a Google Sheets
+            inviaAGoogleSheets(studentData);
+        });
+        
+        function inviaAGoogleSheets(data) {
+            console.log('Dati da inviare a Google Sheets:', data);
+            
+            // Test connettività prima dell'invio
+            console.log('Testing connessione a:', GOOGLE_SCRIPT_URL);
+            
+            // Mostra messaggio di caricamento
+            const submitBtn = document.querySelector('.submit-btn');
+            const buttonText = document.getElementById('buttonText');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const originalText = buttonText.textContent;
+            buttonText.textContent = 'Invio in corso...';
+            submitBtn.disabled = true;
+            loadingSpinner.classList.add('active');
+            
+            // Prima verifica se lo script è accessibile con GET
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'GET',
+                mode: 'cors'
+            }).then(response => {
+                console.log('Test GET response:', response);
+                
+                // Ora invia i dati reali con POST
+                return fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+            }).then(response => {
+                console.log('POST response:', response);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                return response.text();
+            }).then(result => {
+                console.log('Risultato ricevuto:', result);
+                
+                alert(`Test completato e salvato con successo!
+            
+Studente: ${data.nome} ${data.cognome}
+Classe: ${data.classe}
+Punteggio: ${data.punteggio}/60 (${data.percentuale}%)
+Risposte corrette: ${data.risposteCorrette}
+Risposte errate: ${data.risposteErrate}
+Risposte mancanti: ${data.risposteMancanti}
+Data: ${data.dataTest}
+
+I risultati sono stati salvati in Google Sheets e sarà inviata una notifica al docente.`);
+                
+                // Reset del form
+                document.getElementById('testForm').reset();
+                
+            }).catch(error => {
+                console.error('Errore invio:', error);
+                
+                // Fallback: prova con no-cors mode
+                console.log('Tentativo fallback con no-cors mode...');
+                
+                return fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                }).then(() => {
+                    console.log('Fallback no-cors completato');
+                    
+                    alert(`Test completato (modalità fallback)!
+            
+Studente: ${data.nome} ${data.cognome}
+Classe: ${data.classe}  
+Punteggio: ${data.punteggio}/60 (${data.percentuale}%)
+Risposte corrette: ${data.risposteCorrette}
+Risposte errate: ${data.risposteErrate}
+Risposte mancanti: ${data.risposteMancanti}
+Data: ${data.dataTest}
+
+NOTA: Invio completato ma non è possibile verificare la risposta del server.
+Controlla il foglio Google Sheets per confermare il salvataggio.`);
+                    
+                    // Reset del form
+                    document.getElementById('testForm').reset();
+                    
+                }).catch(fallbackError => {
+                    console.error('Errore anche nel fallback:', fallbackError);
+                    
+                    alert(`ERRORE CRITICO nell'invio del test!
+
+Errore principale: ${error.message}
+Errore fallback: ${fallbackError.message}
+
+DATI DEL TEST (da salvare manualmente):
+Studente: ${data.nome} ${data.cognome}
+Classe: ${data.classe}  
+Punteggio: ${data.punteggio}/60 (${data.percentuale}%)
+Risposte corrette: ${data.risposteCorrette}
+Risposte errate: ${data.risposteErrate}
+Risposte mancanti: ${data.risposteMancanti}
+Data: ${data.dataTest}
+
+URL Google Script: ${GOOGLE_SCRIPT_URL}
+
+Contatta immediatamente l'amministratore del sistema.`);
+                });
+            }).finally(() => {
+                // Ripristina il pulsante
+                buttonText.textContent = originalText;
+                submitBtn.disabled = false;
+                loadingSpinner.classList.remove('active');
+            });
+        }
+    </script>
+</body>
+</html>
