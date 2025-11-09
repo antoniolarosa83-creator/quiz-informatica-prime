@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>verifica elementi base programmazione - Informatica</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            text-align: center;
+            background-color: #2c5aa0;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .question-container {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .question {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .answers {
+            list-style: none;
+            padding: 0;
+        }
+
+        .answers li {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .answers li:hover {
+            background-color: #e9ecef;
+        }
+
+        .answers input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .section-title {
+            background-color: #17a2b8;
+            color: white;
+            padding: 15px;
+            margin: 30px 0 20px 0;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .submit-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .submit-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #218838;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        .loading-spinner.active {
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .student-info {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .loading-message {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info-message {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #bee5eb;
+        }
+
+        /* Modal Pop-up Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .modal-icon.success {
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .modal-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c5aa0;
+            margin-bottom: 20px;
+        }
+
+        .modal-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #2c5aa0;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 16px;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .result-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c5aa0;
+        }
+
+        .score-percentage {
+            font-size: 48px;
+            font-weight: bold;
+            color: #28a745;
+            margin: 15px 0;
+        }
+
+        .percentage-danger {
+            color: #dc3545;
+        }
+
+        .percentage-warning {
+            color: #ffc107;
+        }
+
+        .percentage-success {
+            color: #28a745;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .modal-btn-primary {
+            background-color: #2c5aa0;
+            color: white;
+            flex: 1;
+        }
+
+        .modal-btn-primary:hover {
+            background-color: #1e4170;
+            transform: translateY(-2px);
+        }
+
+        .modal-btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            flex: 1;
+        }
+
+        .modal-btn-secondary:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .modal-footer {
+            font-size: 13px;
+            color: #999;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .delivered-badge {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .timestamp {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>verifica - elementi base di INFORMATICA</h1>
+        <p>Istituto Tecnico "Familiari" - Melito Porto Salvo (RC)</p>
+        <p>Verifica e Valutazione</p>
+    </div>
+
+    <form id="testForm">
+        <div class="student-info">
+            <h3>Informazioni Studente</h3>
+            <div class="form-group">
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" name="nome" required>
+            </div>
+            <div class="form-group">
+                <label for="cognome">Cognome:</label>
+                <input type="text" id="cognome" name="cognome" required>
+            </div>
+            <div class="form-group">
+                <label for="classe">Classe:</label>
+                <select id="classe" name="classe" required>
+                    <option value="">Seleziona la classe</option>
+                    <option value="2EQ">2EQ - Elementi Base Programmazione (20 domande da 1-70)</option>
+                    <option value="4H">4H - Algoritmi e Strutture (20 domande da 1-110)</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="infoMessage" class="info-message" style="display: none;"></div>
+
+        <div id="questionsContainer">
+            <div class="loading-message">Caricamento domande in corso...</div>
+        </div>
+
+        <div class="submit-container">
+            <button type="submit" class="submit-btn">
+                <span id="buttonText">Invia Test</span>
+                <div class="loading-spinner" id="loadingSpinner"></div>
+            </button>
+        </div>
+    </form>
+
+    <!-- Modal Pop-up per Risultati -->
+    <div id="resultModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-icon success" id="modalIcon">✓</div>
+            <div class="modal-title">Verifica Completata!</div>
+            <div class="modal-subtitle">I tuoi risultati sono stati registrati con successo</div>
+
+            <div class="result-box">
+                <div class="result-row">
+                    <span class="result-label">Studente:</span>
+                    <span class="result-value" id="studentName">-</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Classe:</span>
+                    <span class="result-value" id="studentClass">-</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Risposte Corrette:</span>
+                    <span class="result-value" id="correctAnswers">-</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Risposte Errate:</span>
+                    <span class="result-value" id="wrongAnswers">-</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Risposte Mancanti:</span>
+                    <span class="result-value" id="missingAnswers">-</span>
+                </div>
+            </div>
+
+            <div class="score-percentage" id="percentageScore">-</div>
+
+            <div class="delivered-badge">
+                ✓ Consegna Ricevuta
+            </div>
+            <div class="timestamp" id="deliveryTime">-</div>
+
+            <div class="modal-footer">
+                I risultati sono stati inviati a Google Sheets e il docente riceverà una notifica
+            </div>
+
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-primary" onclick="chiudiModalEReimpostaForm()">Nuovo Test</button>
+                <button class="modal-btn modal-btn-secondary" onclick="chiudiModal()">Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== CONFIGURAZIONE ====================
+
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSQ09gzueojiE-pxRkQDTsbRoHmwkGhHxMAYuMF8KuajsqmZob7dhznXLlv0E1wwHgxA/exec'
+        console.log('URL Google Apps Script configurato:', GOOGLE_SCRIPT_URL);
+
+        const CLASSI_CONFIG = {
+            '2EQ': {
+                nome: '2EQ - Elementi Base Programmazione',
+                min: 1,
+                max: 70,
+                descrizione: '20 domande casuali su elementi base della programmazione'
+            },
+            '4H': {
+                nome: '4H - Algoritmi e Strutture',
+                min: 1,
+                max: 110,
+                descrizione: '20 domande casuali su algoritmi e strutture di controllo'
+            }
+        };
+
+        // Variabili globali
+        let tutteLeDomande = [];
+        let domandeSelezionate = [];
+        let risposteCorrette = {};
+        let classeSelezionata = null;
+
+        // ==================== FUNZIONI UTILITÀ ====================
+
+        /**
+         * Carica le domande dal file JSON
+         */
+        async function caricaDomande() {
+            try {
+                console.log('Caricamento domande da questions.json...');
+                const response = await fetch('questions.json');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const dati = await response.json();
+                tutteLeDomande = dati.domande || [];
+
+                console.log(`Caricate ${tutteLeDomande.length} domande totali`);
+
+                if (tutteLeDomande.length === 0) {
+                    throw new Error('Nessuna domanda trovata nel file JSON');
+                }
+
+                // Crea una mappa per le risposte corrette
+                tutteLeDomande.forEach(domanda => {
+                    risposteCorrette[domanda.numero] = domanda.risposta_corretta;
+                });
+
+                // Abilita i campi del form
+                document.getElementById('classe').addEventListener('change', onClasseChange);
+
+                console.log('Domande caricate correttamente');
+            } catch (error) {
+                console.error('Errore nel caricamento delle domande:', error.message);
+                const container = document.getElementById('questionsContainer');
+                container.innerHTML = `<div class="error-message">
+                    <h3>Errore nel caricamento delle domande</h3>
+                    <p>Impossibile caricare il file questions.json.</p>
+                    <p><strong>Assicurati che:</strong></p>
+                    <ul>
+                        <li>Il file questions.json si trova nella stessa cartella di questo file HTML</li>
+                        <li>Stai accedendo tramite un server HTTP (non file://)</li>
+                        <li>Il file non è corrotto</li>
+                    </ul>
+                    <p style="color: #666; font-size: 0.9em;">Se usi Google Drive, visualizza tramite Google Drive Viewer.<br>Errore: ${error.message}</p>
+                </div>`;
+            }
+        }
+
+        /**
+         * Gestisce il cambio di classe
+         */
+        function onClasseChange() {
+            classeSelezionata = document.getElementById('classe').value;
+
+            if (!classeSelezionata) {
+                document.getElementById('questionsContainer').innerHTML = '<div class="loading-message">Seleziona una classe per iniziare</div>';
+                document.getElementById('infoMessage').style.display = 'none';
+                return;
+            }
+
+            const config = CLASSI_CONFIG[classeSelezionata];
+            document.getElementById('infoMessage').innerHTML = `<strong>${config.nome}</strong><br>${config.descrizione}`;
+            document.getElementById('infoMessage').style.display = 'block';
+
+            // Seleziona le domande appropriate
+            selezionaDomandePerClasse(classeSelezionata);
+
+            // Genera le domande nel DOM
+            generaDomande();
+        }
+
+        /**
+         * Filtra e seleziona le domande per la classe
+         */
+        function selezionaDomandePerClasse(classe) {
+            const config = CLASSI_CONFIG[classe];
+
+            // Filtra le domande nell'intervallo corretto
+            const domandeDisponibili = tutteLeDomande.filter(d =>
+                d.numero >= config.min && d.numero <= config.max
+            );
+
+            console.log(`Domande disponibili per ${classe}: ${domandeDisponibili.length}`);
+
+            // Applica Fisher-Yates shuffle
+            const disponibili = [...domandeDisponibili];
+
+            for (let i = disponibili.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [disponibili[i], disponibili[j]] = [disponibili[j], disponibili[i]];
+            }
+
+            // Seleziona le prime 20
+            domandeSelezionate = [];
+            for (let i = 0; i < 20 && i < disponibili.length; i++) {
+                const domanda = Object.assign({}, disponibili[i]);
+                domanda.numero_originale = domanda.numero;
+                domanda.numero = i + 1;
+                domandeSelezionate.push(domanda);
+            }
+
+            console.log(`Selezionate ${domandeSelezionate.length} domande casuali`);
+            console.log('Numeri originali:', domandeSelezionate.map(d => d.numero_originale).join(', '));
+        }
+
+        /**
+         * Genera le domande nel DOM
+         */
+        function generaDomande() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = ''; // Pulisci il contenitore
+
+            if (domandeSelezionate.length === 0) {
+                container.innerHTML = '<div class="loading-message">Nessuna domanda disponibile</div>';
+                return;
+            }
+
+            domandeSelezionate.forEach(domanda => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-container';
+
+                const questionText = document.createElement('div');
+                questionText.className = 'question';
+                questionText.textContent = `${domanda.numero}. ${domanda.testo}`;
+                questionDiv.appendChild(questionText);
+
+                const answersList = document.createElement('ul');
+                answersList.className = 'answers';
+
+                domanda.opzioni.forEach((risposta, index) => {
+                    const li = document.createElement('li');
+                    const input = document.createElement('input');
+                    const label = document.createElement('label');
+
+                    input.type = 'radio';
+                    input.name = `q${domanda.numero}`;
+                    input.value = String.fromCharCode(97 + index); // a, b, c, d
+                    input.id = `q${domanda.numero}_${String.fromCharCode(97 + index)}`;
+
+                    label.htmlFor = input.id;
+                    label.textContent = `${String.fromCharCode(97 + index).toUpperCase()}) ${risposta}`;
+
+                    li.appendChild(input);
+                    li.appendChild(label);
+                    answersList.appendChild(li);
+                });
+
+                questionDiv.appendChild(answersList);
+                container.appendChild(questionDiv);
+            });
+        }
+
+        // ==================== EVENT LISTENERS ====================
+
+        document.addEventListener('DOMContentLoaded', caricaDomande);
+
+        document.getElementById('testForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Verifica che una classe sia stata selezionata
+            if (!classeSelezionata) {
+                alert('Per favore seleziona una classe prima di inviare il test');
+                return;
+            }
+
+            // Raccolta dati studente
+            const studentData = {
+                nome: document.getElementById('nome').value,
+                cognome: document.getElementById('cognome').value,
+                classe: classeSelezionata,
+                dataTest: new Date().toLocaleString('it-IT'),
+                risposte: {},
+                domandeUsate: [] // Numeri originali delle domande selezionate
+            };
+
+            // Raccolta risposte e tracciamento delle domande usate
+            let risposteCorrette_count = 0;
+            let risposteErrate_count = 0;
+            let risposteMancanti_count = 0;
+            const dettaglioRisposte = {};
+
+            console.log('DEBUG: domandeSelezionate.length =', domandeSelezionate.length);
+            console.log('DEBUG: domandeSelezionate primamente =', domandeSelezionate.slice(0, 3).map(d => ({numero: d.numero, numero_originale: d.numero_originale})));
+
+            for (let i = 1; i <= domandeSelezionate.length; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                const risposta = selected ? selected.value : '';
+                const domandaOriginale = domandeSelezionate[i - 1].numero_originale;
+
+                studentData.risposte[`domanda_${i}`] = risposta;
+                studentData.domandeUsate.push(domandaOriginale);
+
+                // Ottieni la risposta corretta originale della domanda
+                const rispostaCorretta = domandeSelezionate[i - 1].risposta_corretta;
+
+                if (!risposta || risposta === '') {
+                    risposteMancanti_count++;
+                    dettaglioRisposte[`domanda_${i}_punti`] = 0;
+                    dettaglioRisposte[`domanda_${i}_corretta`] = rispostaCorretta;
+                } else if (risposta === rispostaCorretta) {
+                    risposteCorrette_count++;
+                    dettaglioRisposte[`domanda_${i}_punti`] = 1;
+                    dettaglioRisposte[`domanda_${i}_corretta`] = rispostaCorretta;
+                } else {
+                    risposteErrate_count++;
+                    dettaglioRisposte[`domanda_${i}_punti`] = 0;
+                    dettaglioRisposte[`domanda_${i}_corretta`] = rispostaCorretta;
+                }
+            }
+
+            studentData.punteggio = risposteCorrette_count;
+            studentData.percentuale = (risposteCorrette_count / 20 * 100).toFixed(1);
+            studentData.risposteCorrette = risposteCorrette_count;
+            studentData.risposteErrate = risposteErrate_count;
+            studentData.risposteMancanti = risposteMancanti_count;
+            studentData.dettaglioRisposte = dettaglioRisposte;
+
+            console.log('DEBUG: studentData.domandeUsate PRIMA di inviare:', studentData.domandeUsate);
+            console.log('DEBUG: studentData completo:', JSON.stringify(studentData).substring(0, 300));
+
+            // Invio dati a Google Sheets
+            inviaAGoogleSheets(studentData);
+        });
+
+        function inviaAGoogleSheets(data) {
+            console.log('Dati da inviare a Google Sheets:', data);
+
+            // Mostra messaggio di caricamento
+            const submitBtn = document.querySelector('.submit-btn');
+            const buttonText = document.getElementById('buttonText');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const originalText = buttonText.textContent;
+            buttonText.textContent = 'Invio in corso...';
+            submitBtn.disabled = true;
+            loadingSpinner.classList.add('active');
+
+            // Prima verifica se lo script è accessibile con GET
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'GET',
+                mode: 'cors'
+            }).then(response => {
+                console.log('Test GET response:', response);
+
+                // Ora invia i dati reali con POST
+                return fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+            }).then(response => {
+                console.log('POST response:', response);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                return response.text();
+            }).then(result => {
+                console.log('Risultato ricevuto:', result);
+
+                // Mostra il modal con i risultati
+                mostraModalRisultati(data);
+
+            }).catch(error => {
+                console.error('Errore invio:', error);
+
+                // ERRORE: Non possiamo usare no-cors con JSON
+                // Mostriamo un messaggio di errore informativo
+                const errorMsg = `❌ ERRORE: Non è possibile inviare i dati a Google Sheets
+
+CAUSA: Stai aprendo il file HTML direttamente dal disco (file://)
+Questo blocca i CORS (Cross-Origin Resource Sharing) richiesti per comunicare con Google Apps Script.
+
+SOLUZIONE: Devi usare un server web locale.
+
+OPZIONE 1 - Python (Consigliato):
+1. Apri Prompt dei Comandi (Windows + R → digita "cmd")
+2. Copia e incolla: cd C:\\Users\\anton\\OneDrive\\Desktop\\slide-4H\\verifica-info-13-nov && python -m http.server 8000
+3. Premi INVIO
+4. Apri il browser: http://localhost:8000/index-info-13-nov.html
+
+OPZIONE 2 - Node.js:
+1. Apri Prompt dei Comandi
+2. Vai alla cartella: cd C:\\Users\\anton\\OneDrive\\Desktop\\slide-4H\\verifica-info-13-nov
+3. Esegui: npx http-server -p 8000
+4. Apri: http://localhost:8000/index-info-13-nov.html
+
+Dopo aver usato un server web locale, il test funzionerà perfettamente!`;
+
+                alert(errorMsg);
+            }).finally(() => {
+                // Ripristina il pulsante
+                buttonText.textContent = originalText;
+                submitBtn.disabled = false;
+                loadingSpinner.classList.remove('active');
+            });
+        }
+
+        // ==================== FUNZIONI MODAL ====================
+
+        /**
+         * Mostra il modal con i risultati della verifica
+         */
+        function mostraModalRisultati(data) {
+            // Popola i dati nel modal
+            document.getElementById('studentName').textContent = `${data.nome} ${data.cognome}`;
+            document.getElementById('studentClass').textContent = data.classe;
+            document.getElementById('correctAnswers').textContent = `${data.risposteCorrette}/20`;
+            document.getElementById('wrongAnswers').textContent = data.risposteErrate;
+            document.getElementById('missingAnswers').textContent = data.risposteMancanti;
+
+            // Imposta il colore e il testo della percentuale
+            const percentualeValue = parseFloat(data.percentuale);
+            const percentageElement = document.getElementById('percentageScore');
+            percentageElement.textContent = `${data.percentuale}%`;
+
+            // Cambia il colore in base al risultato
+            if (percentualeValue >= 80) {
+                percentageElement.className = 'score-percentage percentage-success';
+            } else if (percentualeValue >= 60) {
+                percentageElement.className = 'score-percentage percentage-warning';
+            } else {
+                percentageElement.className = 'score-percentage percentage-danger';
+            }
+
+            // Imposta l'orario di consegna
+            document.getElementById('deliveryTime').textContent = `Consegnato: ${data.dataTest}`;
+
+            // Mostra il modal con animazione
+            const modal = document.getElementById('resultModal');
+            modal.classList.add('active');
+
+            // Impedisce lo scroll della pagina dietro il modal
+            document.body.style.overflow = 'hidden';
+        }
+
+        /**
+         * Chiude il modal
+         */
+        function chiudiModal() {
+            const modal = document.getElementById('resultModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        /**
+         * Chiude il modal e reimposta il form
+         */
+        function chiudiModalEReimpostaForm() {
+            chiudiModal();
+
+            // Reset del form
+            document.getElementById('testForm').reset();
+            document.getElementById('questionsContainer').innerHTML = '<div class="loading-message">Seleziona una classe per iniziare</div>';
+            document.getElementById('infoMessage').style.display = 'none';
+            classeSelezionata = null;
+        }
+
+        // Chiude il modal se clicchi sull'overlay (non sul contenuto)
+        document.getElementById('resultModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                chiudiModal();
+            }
+        });
+
+        // Chiude il modal premendo ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modal = document.getElementById('resultModal');
+                if (modal.classList.contains('active')) {
+                    chiudiModal();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
